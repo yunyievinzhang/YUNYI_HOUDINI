@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<shelfDocument>
+  <!-- This file contains definitions of shelves, toolbars, and tools.
+ It should not be hand-edited when it is being used by the application.
+ Note, that two definitions of the same element are not allowed in
+ a single file. -->
+
+  <tool name="light_converger" label="Light Converger" icon="light_converger/HLGT_light_converger.svg">
+    <script scriptType="python">
+    <![CDATA[
+from tools.light_converger import spot_light_converge_ui
+from importlib import reload
+from hutil.Qt import QtCore
+reload(spot_light_converge_ui)
+
+myWin=spot_light_converge_ui.CreateLightFormationWidget()
+myWin.setParent(hou.qt.mainWindow(), QtCore.Qt.Window)
+myWin.setWindowFlags(myWin.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
+myWin.show()
+
+]]>
+    </script>
+  </tool>
+</shelfDocument>

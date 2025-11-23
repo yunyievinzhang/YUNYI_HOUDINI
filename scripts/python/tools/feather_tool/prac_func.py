@@ -6,6 +6,10 @@ import os
 import glob
 import random
 import hou
+
+VELLUM_NODE_TYPE="yunyi::vellum_feather::1.0"
+
+
 def create_attr_name(attribute):
     full_attrib_name="painted_"+attribute
     name_components=attribute.split("_")
@@ -26,15 +30,18 @@ def is_input_node(parent_node, child_node):
 
 def create_nodes():
     asset_name=hou.node(".")
+    asset_name.allowEditingOfContents()
     check_uv()
     
     
     set_groupBox_expressions()
+    
     set_asset_parm("sopoutput", "$HIP/geo/$HIPNAME.$OS.$F.bgeo.sc")
     skinpath=skin_path()
     attach_node=hou.node(attrib_create_path())
     
     has_new_attr= False
+    
     if not(hou.node("/obj/"+str(asset_name)+"_vellum")):
         create_vellum()
         
@@ -152,9 +159,14 @@ def tpose_anim():
     
     groom_geo=tpose_geo.outputs()[0]
     
-    guide_groom=hou.node(groom_geo.outputs()[0].path())
+    print("This is groom geo")
+    print(tpose_geo)
+    print(groom_geo)
+    #guide_groom=hou.node(groom_geo.outputs()[0].path())
     
-    m_curves=groom_geo.outputs()[0].path()+"/DISPLAY"
+    #m_curves=groom_geo.outputs()[0].path()+"/DISPLAY"
+
+    m_curves=groom_geo.path()+"/DISPLAY"
     
     vellum_node=hou.node(str(asset_path())+"_vellum")
     
@@ -286,7 +298,7 @@ def asset_name():
 
 def create_vellum():
     assetname=asset_name()
-    vellum_node=hou.node("/obj").createNode("vellum_feather",str(assetname)+"_vellum")
+    vellum_node=hou.node("/obj").createNode(VELLUM_NODE_TYPE,str(assetname)+"_vellum")
     asset_pos=hou.node(".").position()
     vellum_pos=hou.Vector2(asset_pos[0]-2.5,asset_pos[1])
     vellum_node.setPosition(vellum_pos)
@@ -294,7 +306,7 @@ def create_vellum():
     
     #set vellum_parameter
     merge1=str(asset_path())+"_vellum/vellum_setup/object_merge1/objpath1"
-    merge2=str(asset_path())+"_vellum/vellum_setup/object_merge1/objpath1"
+    merge2=str(asset_path())+"_vellum/vellum_setup/object_merge2/objpath1"
     
     curves=eval_asset_parm("merge_curves")
     anim_skin=eval_asset_parm("merge_skin")
@@ -334,7 +346,7 @@ def group_box():
 def set_groupBox_expressions():
 
     asset= hou.node(".")
-    asset.allowEditingOfContents()
+    
     assetpath=asset_path()
     assetname=asset_name()
     
@@ -355,6 +367,7 @@ def set_groupBox_expressions():
     parm_translate_x.setExpression('ch("../../../'+box_name+'/tx")')
     parm_translate_y.setExpression('ch("../../../'+box_name+'/ty")')
     parm_translate_z.setExpression('ch("../../../'+box_name+'/tz")')
+    
     
 def group_switch():
     assetname= asset_name()
@@ -452,16 +465,21 @@ def create_clusters():
             cluster_switcher.setNextInput(del_node)
             
         node_list.append(del_node)
-    
-    nodes_parent=node_list[0].parent()
+    if node_list:
+        nodes_parent=node_list[0].parent()
+    else: 
+        nodes_parent=hou.node(".").node("feather_tool")
     cluster_box=nodes_parent.createNetworkBox("clusters_box")
     
     # find good position of boxes, which is center of selected nodes.
-    list_x_of_selected_nodes = [node.position().x() for node in node_list]
-    center_x = sum(list_x_of_selected_nodes) / len(node_list)
-    list_y_of_selected_nodes = [node.position().y() for node in node_list]
-    center_y = sum(list_y_of_selected_nodes) / len(node_list)
-    cluster_box.setPosition(hou.Vector2(center_x, center_y))
+    if node_list:
+        list_x_of_selected_nodes = [node.position().x() for node in node_list]
+        center_x = sum(list_x_of_selected_nodes) / len(node_list)
+        list_y_of_selected_nodes = [node.position().y() for node in node_list]
+        center_y = sum(list_y_of_selected_nodes) / len(node_list)
+        cluster_box.setPosition(hou.Vector2(center_x, center_y))
+    else:
+        cluster_box.setPosition(in_cluster_pos-hou.Vector2(0,1))
     
     for cluster_node in node_list:
         cluster_box.addItem(cluster_node)
