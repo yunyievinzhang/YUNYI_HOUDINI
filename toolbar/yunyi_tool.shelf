@@ -7,5 +7,7 @@
 
   <toolshelf name="yunyi_tool" label="Yunyi Tools">
     <memberTool name="test_shelf_tool"/>
+    <memberTool name="light_procedural_factory"/>
+    <memberTool name="light_converger"/>
   </toolshelf>
 </shelfDocument>
