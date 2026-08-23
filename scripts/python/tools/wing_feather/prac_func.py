@@ -5,12 +5,9 @@ def asset_path():
     path=hou.node(".").path()
     return path
 
-
 def asset_name():
     name=str(hou.node("."))
     return name
-    
-    
     
 
 def set_asset_parm(parm, val):
@@ -33,6 +30,7 @@ def set_name():
     outputFile="$HIP/geo/{0}.$F4.bgeo.sc".format(an)
     set_asset_parm("sopoutput",outputFile)
 
+
 def render():
     wing_reader()
     set_asset_parm("switch_mat", 1)
@@ -44,6 +42,9 @@ def render():
     
     
 def batch_render():
+    '''
+    batch output wing feathers
+    '''
     wing_reader(multi_mode=True)
     
     nodes=hou.selectedNodes()
@@ -58,8 +59,12 @@ def batch_render():
                 
                 node.parm("execute").pressButton()
     read_files()
-                
+
+
 def wing_reader(multi_mode=False):
+    '''
+    creating wing reader templates
+    '''
     check=0
     obj=hou.node("/obj")
     for child in obj.children():
@@ -85,6 +90,7 @@ def wing_reader(multi_mode=False):
     merge_node=wr.node("merge")
     selected_nodes=obj.selectedChildren()
     reader_used_list=[]
+
     for selected in selected_nodes:
         if selected.type().name()==WING_TYPE:
             wing_name=selected.name()
@@ -95,6 +101,7 @@ def wing_reader(multi_mode=False):
                 wing_file.parm("missingframe").set(1)
                 merge_node.setNextInput(wing_file)
             reader_used_list.append("{0}_read".format(wing_name))
+
     if multi_mode:     
         if hou.node(".").parm("del_unselected").eval()==1:
             #start cleaning up ununsed node
@@ -104,12 +111,14 @@ def wing_reader(multi_mode=False):
                 unused_node=hou.node("/obj/wing_reader/"+unused_name)
                 unused_node.destroy()
 
+
 def read_files():
     reader=hou.node("/obj/wing_reader")
     for child in reader.children():
         if child.type().name()=="file":
             outputfile="$HIP/geo/{0}.$F4.bgeo.sc".format(child.name().split("_read")[0])
             child.parm("file").set(outputfile)
+
 
 def collect_reader_file_name():
     reader=hou.node("/obj/wing_reader")
@@ -119,7 +128,8 @@ def collect_reader_file_name():
             if child.type().name()=="file":
                 child_name_list.append(child.name())
     return child_name_list
-            
+
+
 def find_unused(used_list, wr_child_list):
     unused_set=set()
     if len(used_list)<len(wr_child_list):
