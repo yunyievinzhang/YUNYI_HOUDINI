@@ -11,6 +11,9 @@ VELLUM_NODE_TYPE="yunyi::vellum_feather::1.0"
 
 
 def create_attr_name(attribute):
+    '''
+    create paintable attributes
+    '''
     full_attrib_name="painted_"+attribute
     name_components=attribute.split("_")
     attrib_node_name="Painted"
@@ -21,6 +24,9 @@ def create_attr_name(attribute):
     return full_attrib_name,attrib_node_name
 
 def is_input_node(parent_node, child_node):
+    '''
+    check if two nodes are input or now
+    '''
     input_nodes = parent_node.inputs()
     for input_node in input_nodes:
         if input_node == child_node:
@@ -29,6 +35,9 @@ def is_input_node(parent_node, child_node):
     return False
 
 def create_nodes():
+    '''
+    create template nodes
+    '''
     asset_name=hou.node(".")
     asset_name.allowEditingOfContents()
     check_uv()
@@ -107,17 +116,19 @@ def create_nodes():
         hou.ui.displayMessage("No new attributes are found, so nothing is changed")
     else:
         hou.ui.displayMessage("The newest attributes are updated")
-        
-    
-    # add a entry where you can delete attributes on updates
-    #future dev
     
     
 def asset_path():
+    '''
+    get the asset path
+    '''
     path=hou.node(".").path()
     return path
     
 def attrib_create_path():
+    '''
+    get the attribute create path.
+    '''
     try:
         asset=asset_path()
         path=hou.parm(asset+"/attr_create_path").eval()
@@ -127,6 +138,9 @@ def attrib_create_path():
         exit()
     
 def skin_path():
+    '''
+    get the skin path
+    '''
     try:
         asset=asset_path()
         skin=hou.parm(asset+'/merge_skin').eval()
@@ -139,6 +153,9 @@ def skin_path():
         exit()
         
 def tpose_anim():
+    '''
+    T pose to animation switcher
+    '''
     switch_val= eval_asset_parm("xn__t_pose_to_anim_")
     vellum_switch_val=eval_asset_parm("vellum")
     try:
@@ -158,21 +175,12 @@ def tpose_anim():
         sys.exit()
     
     groom_geo=tpose_geo.outputs()[0]
-    
-    print("This is groom geo")
-    print(tpose_geo)
-    print(groom_geo)
-    #guide_groom=hou.node(groom_geo.outputs()[0].path())
-    
-    #m_curves=groom_geo.outputs()[0].path()+"/DISPLAY"
 
     m_curves=groom_geo.path()+"/DISPLAY"
     
     vellum_node=hou.node(str(asset_path())+"_vellum")
     
     if switch_val ==0:
-    
-    
         set_asset_parm("vellum",0)
         set_asset_parm("merge_curves",m_curves)
         
@@ -194,6 +202,9 @@ def tpose_anim():
         curve_geo.setDisplayFlag(1)
 
 def vellum_on():
+    '''
+    vellum solver setting
+    '''
     switch_val= eval_asset_parm("vellum")
     try:
         curve_geo=get_parent_node("merge_curves")
@@ -229,10 +240,6 @@ def vellum_on():
         guide_groom.setDisplayFlag(0)
         vellum_node.setDisplayFlag(1)
         
-        
-    
-    
-        
 def get_parent_node(parm):
     parm_path = eval_asset_parm(parm)
     parm_geo = hou.node(parm_path).parent()
@@ -261,7 +268,11 @@ def eval_asset_parm(parm):
     except:
         hou.ui.displayMessage("there is no such parameter: {0}".format(parm))
         sys.exit()
+
 def check_uv():
+    '''
+    check if there is use UV information
+    '''
     skinpath=skin_path()[1]
     skin_node=hou.node(skinpath)
     geo=skin_node.geometry()
@@ -274,6 +285,9 @@ def check_uv():
 
 
 def poly_res():
+    '''
+    adjust the resolution of polygon visualization
+    '''
     f_res=eval_asset_parm("fres")
     feather_res=eval_asset_parm("feather_segs")
     poly_res=eval_asset_parm("poly_res")
@@ -285,10 +299,16 @@ def poly_res():
         set_asset_parm("feather_segs", poly_res)
 
 def set_res():
+    '''
+    set feather resolution
+    '''
     f_res = eval_asset_parm("fres")
     set_asset_parm("feather_segs", f_res)
     
 def set_res_from_pres():
+    '''
+    set polygon resolutio
+    '''
     poly_res = eval_asset_parm("poly_res")
     set_asset_parm("feather_segs", poly_res)
     
@@ -297,6 +317,9 @@ def asset_name():
     return name
 
 def create_vellum():
+    '''
+    create vellum template
+    '''
     assetname=asset_name()
     vellum_node=hou.node("/obj").createNode(VELLUM_NODE_TYPE,str(assetname)+"_vellum")
     asset_pos=hou.node(".").position()
@@ -316,6 +339,9 @@ def create_vellum():
     
     
 def group_box():
+    '''
+    create group box template
+    '''
     geo=hou.node("/obj")
     assetname=asset_name()
     box_name=assetname+("_groupbox")
@@ -344,7 +370,9 @@ def group_box():
         box_geo.setPosition(box_pos)
         
 def set_groupBox_expressions():
-
+    '''
+    set parameter expression on group box template
+    '''
     asset= hou.node(".")
     
     assetpath=asset_path()
@@ -370,6 +398,9 @@ def set_groupBox_expressions():
     
     
 def group_switch():
+    '''
+    group box switch
+    '''
     assetname= asset_name()
     # get the group box node
     box_path="/obj/"+assetname+"_groupbox"
@@ -386,13 +417,15 @@ def group_switch():
         set_asset_parm("range_switch",1)
         
 def create_clusters():
+    '''
+    create clusters for lightweight data reading
+    '''
     delete_clusters()
     loop_range=(eval_asset_parm("cluster_core")*2)-2
     assetpath=asset_path()
     in_cluster=hou.node(assetpath+"/feather_tool/IN_CLUSTER")
     in_cluster_pos=in_cluster.position()
     cluster_switcher= hou.node(assetpath+"/feather_tool/cluster_switcher")
-    
     
     # for layout position
     cluster_x_center=in_cluster_pos[0]
@@ -408,8 +441,6 @@ def create_clusters():
     # prepare to create network box
     node_list=[]
     for i in range(loop_range):
-        
-        
         del_node=create_asset_node("delete","cluster_del0")
         del_node.setPosition(in_cluster_pos- hou.Vector2(0,1))
         set_assetNode_parm(del_node,"groupop",1)
@@ -517,6 +548,9 @@ def delete_clusters():
             
             
 def cluster_sequence_write():
+    '''
+    distribute writing for feather clusters
+    '''
     prev_feather_mode=eval_asset_parm("feather_mode")
     prev_toggle=eval_asset_parm("dyna_static_tgle")
     #set feather_mode first
@@ -568,6 +602,9 @@ def cluster_sequence_write():
     set_asset_parm("dyna_static_tgle",prev_toggle)
     
 def create_clusterRead_node():
+    '''
+    distributed reading of feather clusters
+    '''
     assetname=asset_name()
     cluster_sequence_geo_name=assetname+"_sequenceRead"
     
@@ -886,9 +923,6 @@ def static_sequence_read():
     create_read_file("Static",1, anchor_node)
 
 
-
-    
-    
 def cluster_single_frame_write():
     #got the path
     remove_original_cache("staticCluster")
