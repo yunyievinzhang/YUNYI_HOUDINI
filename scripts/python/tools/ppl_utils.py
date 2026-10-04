@@ -1,14 +1,14 @@
 '''
-一些适配流程的方法
+Pipeline compatibility helpers.
 '''
 import os
 import importlib
 
 def get_hou_pyside_version():
     '''
-    获取对应Houdini版本的PySide模块
+    Return the PySide major version used by the current Houdini version.
     '''
-    # 根据环境变量获取Houdini版本
+    # Read the Houdini version from the environment.
     houdini_version=os.environ["HOUDINI_VERSION"]
     rough_version=int(houdini_version.split(".")[0])
     pyside_version=2
@@ -20,7 +20,7 @@ def get_hou_pyside_version():
     
 def get_pyside_mod():
     '''
-    导入PySide模块
+    Import the matching PySide modules.
     '''
     mod_full_name=f"PySide{get_hou_pyside_version()}"
     try:
@@ -30,4 +30,4 @@ def get_pyside_mod():
         return QtWidgets, QtCore, QtGui
 
     except ImportError as e:
-       print(f"无法导入模块: {mod_full_name}:e")
+       print(f"Unable to import module: {mod_full_name}: {e}")

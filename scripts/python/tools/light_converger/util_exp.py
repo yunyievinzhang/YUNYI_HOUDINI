@@ -1,6 +1,6 @@
 import textwrap
 
-# 烘焙方向脚本
+# Script for baking light direction.
 BAKE_DIR_SCRIPT=textwrap.dedent('''
                             node = kwargs['node']
                             world_transform=node.worldTransform()
@@ -11,7 +11,7 @@ BAKE_DIR_SCRIPT=textwrap.dedent('''
                             node.parmTuple("r").set(rotation)
                             node.parm("lookatpath").set("")
                             ''')
-# 烘焙位置脚本
+# Script for baking position.
 BAKE_POS_SCRIPT=textwrap.dedent('''
                             node = kwargs['node'];
                             world_transform=node.worldTransform();
@@ -23,7 +23,7 @@ BAKE_POS_SCRIPT=textwrap.dedent('''
                             node.setInput(0, None);
                             ''')
 
-# 恢复球体牵引脚本
+# Script for restoring sphere look-at control.
 RECOVER_LOOKAT_SCRIPT=textwrap.dedent('''
                             node = kwargs['node']
                             idx=node.name().split("_at_")[1]
@@ -32,7 +32,7 @@ RECOVER_LOOKAT_SCRIPT=textwrap.dedent('''
                             node.parm("lookatpath").set(sphere_node.path())
                             ''')
 
-# 恢复submarker脚本
+# Script for restoring submarker input control.
 RECOVER_SUBMARKER_SCRIPT=textwrap.dedent('''
                             node = kwargs['node']
                             idx=node.name().split("_at_")[1]
@@ -45,13 +45,13 @@ RECOVER_SUBMARKER_SCRIPT=textwrap.dedent('''
                             node.setInput(0, submarker_node)
                             ''')
 
-# 烘焙开角脚本
+# Script for baking the cone angle.
 BAKE_CONE_SCRIPT=textwrap.dedent('''
                             node = kwargs['node']
                             node.parm("ar_cone_angle").deleteAllKeyframes()
                             ''')
 
-# 恢复开交总控脚本
+# Script for restoring cone-angle master control.
 RECOVER_CONE_SCRIPT=textwrap.dedent('''
                             node = kwargs['node']
                             parent = node.parent()
@@ -59,7 +59,7 @@ RECOVER_CONE_SCRIPT=textwrap.dedent('''
                             node.parm("ar_cone_angle").set(marker_node.parm("light_cone_angle"))
                             ''')
 
-# 设置控制网格法线以及up脚本
+# Script for adding N and up attributes to the control grid.
 SET_N_AND_UP_SCRIPT=textwrap.dedent("""
                             node = hou.pwd()
                             geo = node.geometry()
@@ -69,7 +69,7 @@ SET_N_AND_UP_SCRIPT=textwrap.dedent("""
                                 geo.addAttrib(hou.attribType.Point, "up", (0.0, 1.0, 0.0))
                             """)
 
-# 恢复rivet控制脚本
+# Script for restoring rivet control.
 RECOVER_RIVET_SCRIPT=textwrap.dedent('''
                             node = kwargs['node']
                             idx=node.name().split("sphere")[1]
