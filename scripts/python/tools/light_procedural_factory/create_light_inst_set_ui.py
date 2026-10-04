@@ -20,17 +20,17 @@ def start_create(light_name, light_type_name):
 class CreateSetWindow(QWidget):
      def __init__(self):
           super().__init__()
-          self.setWindowTitle("灯光Instance模板生成")
+          self.setWindowTitle("Create Light Instance Template")
           layout=QVBoxLayout()
           
-          self.name_label=QLabel("请输入灯光名字")
+          self.name_label=QLabel("Enter a light name")
           layout.addWidget(self.name_label)
           self.line_edit=QLineEdit()
           layout.addWidget(self.line_edit)
 
           layout.addSpacing(20)
           
-          self.type_label=QLabel("请选择灯光类型")
+          self.type_label=QLabel("Select a light type")
           layout.addWidget(self.type_label)
 
           self.combo= QComboBox()
@@ -38,7 +38,7 @@ class CreateSetWindow(QWidget):
           layout.addWidget(self.combo)
           layout.addSpacing(20)
 
-          self.button=QPushButton("确认")
+          self.button=QPushButton("Confirm")
           self.button.clicked.connect(self.on_submit)
           layout.addWidget(self.button)
           self.setLayout(layout)
@@ -51,7 +51,7 @@ class CreateSetWindow(QWidget):
                start_create(light_name, light_type_name)
                self.close()
           else:
-               self.name_label.setText("请输入有效名字！")
+               self.name_label.setText("Enter a valid name.")
                
      def closeEvent(self, event):
                self.setParent(None)

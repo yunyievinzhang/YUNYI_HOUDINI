@@ -22,138 +22,138 @@ MARKER_NODE_VERSION="1.0"
 class CreateLightFormationWidget(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("聚光灯灯光阵创建")
+        self.setWindowTitle("Create Spotlight Formation")
         self.init_ui()
 
     def init_ui(self):
         reload(spot_light_converge)
 
-        #创建Layout
+        # Create the layout.
         layout = QVBoxLayout()
         form_layout = QFormLayout()  
         form_layout.setVerticalSpacing(5)
 
-        # 列参数
+        # Column count.
         self.columns_input = QSpinBox()
         self.columns_input.setRange(1, 100)
         self.columns_input.setValue(5)
 
-        # 行参数
+        # Row count.
         self.rows_input = QSpinBox()
         self.rows_input.setRange(1, 100)
         self.rows_input.setValue(5)
 
-        # 间隔参数
+        # Spacing.
         self.spacing_input = QDoubleSpinBox()
         self.spacing_input.setMinimum(float('-inf'))
         self.spacing_input.setMaximum(float('inf'))
         self.spacing_input.setValue(2.0)
 
-        # Marker 高度参数
+        # Marker height.
         self.marker_height_input=QDoubleSpinBox()
         self.marker_height_input.setMinimum(float('-inf'))
         self.marker_height_input.setMaximum(float('inf'))
         self.marker_height_input.setValue(10.0)
 
-        # 灯光图标大小参数
+        # Light icon size.
         self.light_icon_input=QDoubleSpinBox()
         self.light_icon_input.setMinimum(float('-inf'))
         self.light_icon_input.setMaximum(float('inf'))
         self.light_icon_input.setValue(5.0)
         
-        # 地面高度参数
+        # Ground height.
         self.ground_height_input=QDoubleSpinBox()
         self.ground_height_input.setMinimum(float('-inf'))
         self.ground_height_input.setMaximum(float('inf'))
         self.ground_height_input.setValue(100.0)
 
-        # 灯光类型选择参数
+        # Light type selector.
         self.light_combo=QComboBox()
         self.read_light_type()
 
-        # 灯组名参数
+        # Light group name.
         self.light_group_input=QLineEdit()
         
-        # 加入表格
-        form_layout.addRow("灯光种类:", self.light_combo)
-        form_layout.addRow("灯光组名:", self.light_group_input)
-        form_layout.addRow("行:", self.rows_input)
-        form_layout.addRow("列:", self.columns_input)
-        form_layout.addRow("间隔:", self.spacing_input)
-        form_layout.addRow("Marker默认高度: ", self.marker_height_input)
-        form_layout.addRow("灯光图标大小: ", self.light_icon_input)
-        form_layout.addRow("地面初始高度", self.ground_height_input)
+        # Add widgets to the form.
+        form_layout.addRow("Light Type:", self.light_combo)
+        form_layout.addRow("Light Group Name:", self.light_group_input)
+        form_layout.addRow("Rows:", self.rows_input)
+        form_layout.addRow("Columns:", self.columns_input)
+        form_layout.addRow("Spacing:", self.spacing_input)
+        form_layout.addRow("Default Marker Height:", self.marker_height_input)
+        form_layout.addRow("Light Icon Size:", self.light_icon_input)
+        form_layout.addRow("Initial Ground Height:", self.ground_height_input)
 
-        # 创建灯阵按钮
-        create_button = QPushButton("创建阵列")
+        # Button for creating the light formation.
+        create_button = QPushButton("Create Formation")
         create_button.clicked.connect(self.on_submit)
 
-        # 加入layout
+        # Add widgets to the layout.
         layout.addLayout(form_layout)
         layout.addSpacing(20)
         layout.addWidget(create_button)
         self.setLayout(layout)
         
-        # 检查并阅读默认设置文件
+        # Load defaults from the config file.
         self.read_default_config()
 
     def on_submit(self):
-        # 灯光类型
+        # Light type.
         chosen_light_type=self.light_combo.currentText()
         light_node_type_name=self.light_type_dict[chosen_light_type]
-        # 灯光组名
+        # Light group name.
         light_group_name=self.light_group_input.text() 
-        # 行数
+        # Row count.
         rows = self.rows_input.value()   
-        # 列数
+        # Column count.
         columns = self.columns_input.value()
-        # 间隔
+        # Spacing.
         spacing = self.spacing_input.value()
-        # Marker高度
+        # Marker height.
         marker_height=self.marker_height_input.value()
-        # 灯光图标大小
+        # Light icon size.
         light_icon_size=self.light_icon_input.value()
-        # 地面高度
+        # Ground height.
         ground_height=self.ground_height_input.value()
 
-        # 检查是否有未设置的参数
+        # Check for missing values.
         item_check_dict={
-            "灯光类型": light_node_type_name,
-            "灯光组名": light_group_name,
-            "行数": rows,
-            "列数": columns,
-            "间隔": spacing,
-            "Marker 默认高度": marker_height,
-            "地面初始高度": ground_height
+            "Light Type": light_node_type_name,
+            "Light Group Name": light_group_name,
+            "Rows": rows,
+            "Columns": columns,
+            "Spacing": spacing,
+            "Default Marker Height": marker_height,
+            "Initial Ground Height": ground_height
         }
 
         missing=[ name for name, val in item_check_dict.items() if not val]
         
         if missing:
             missing_item_str=" ".join(missing)
-            hou.ui.displayMessage(f"请妥善设置如下参数: {missing_item_str}")
+            hou.ui.displayMessage(f"Please set the following parameters: {missing_item_str}")
             return
-        # 如果一切正常就创建灯光阵
+        # Create the light formation when all inputs are valid.
         spot_light_converge.create_light_formation(light_group_name, columns, 
                                                    rows,light_icon_size, spacing, marker_height, 
                                                    ground_height,light_node_type_name)
 
     def read_default_config(self):
         '''
-        读取默认设置文件
+        Read the default settings file.
         '''
         hip_dir=hou.expandString("$HIP")
         config_dir=f"{hip_dir}/config".replace("\\", "/")
         config_dir_obj=Path(config_dir)
 
-        # 如果路径存在则搜索config文件
+        # Search for the config file when the directory exists.
         if config_dir_obj.is_dir():
            config_file=f"{config_dir}/light_formation_config.json"
            if os.path.exists(config_file):
                 with open(config_file, "r", encoding='utf-8') as f:
                     config_obj=json.load(f)
                 
-                # 获取config 文件内参数
+                # Read values from the config file.
                 light_type=config_obj.get("light_type", None)
                 light_group=config_obj.get("light_group", None)
                 row=config_obj.get("row", None)
@@ -163,7 +163,7 @@ class CreateLightFormationWidget(QWidget):
                 light_icon_scale=config_obj.get("light_icon_scale", None)
                 ground_height=config_obj.get("ground_height", None)
                 
-                # 如果发现文件内设置就修改界面相关参数
+                # Apply values found in the config file to the UI.
                 if light_type and (light_type in self.light_type_dict):
                     self.light_combo.setCurrentText(light_type)
                 if light_group:
@@ -183,13 +183,13 @@ class CreateLightFormationWidget(QWidget):
 
     def read_light_type(self):
         '''
-        获取可以聚集的灯光类型用于加载界面
+        Load the light types that can be used for convergence.
         '''
-        # 寻找可聚集灯光类型配置文件
+        # Locate the convergeable-light config file.
         current_dir=os.path.dirname(__file__).replace("\\", "/")
         light_type_config=f"{current_dir}/convergeable_light.json"
 
-        # 如果法线则载入界面
+        # Load the UI options if the file exists.
         if os.path.exists(light_type_config):
             with open(light_type_config, "r", encoding='utf-8') as f:
                 light_type_data=json.load(f)
