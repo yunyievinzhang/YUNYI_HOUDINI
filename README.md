@@ -24,6 +24,12 @@ Procedural lighting system designed to generate and control large light formatio
 
 [View Tool →](scripts/python/tools/light_converger)
 
+### Eye Catchlight Rig
+
+Procedural Houdini/Arnold lighting rig that converts artist-defined reference catchlights into tracked eye lights, preserving the intended highlight placement throughout character animation.
+
+[View Tool →](scripts/python/tools/eye_light_rig)
+
 ### Procedural Feather Tool
 
 Feather pipeline workflow containing Houdini automation for Vellum setup, geometry validation, clustering, caching, and distributed data loading.
